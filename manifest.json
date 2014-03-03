@@ -1,0 +1,31 @@
+{
+    "manifest_version": 2,
+    "name": "Leap Motion Browse",
+    "version": "1.0",
+    "background": {
+        "scripts": [
+            "libs/jquery-2.1.0.min.js",
+            "libs/leap-0.4.1.js",
+            "background.js"
+        ]
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "<all_urls>"
+            ],
+            "js": [
+                "libs/jquery-2.1.0.min.js",
+                "content-script.js"
+            ],
+            "run_at": "document_start"
+        }
+    ],
+    "permissions": [
+        "tabs"
+    ],
+    "web_accessible_resources": [
+        "libs/jquery-2.1.0.js",
+        "libs/jquery-2.1.0.min.map"
+    ]
+}
