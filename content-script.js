@@ -10,7 +10,7 @@
 			return;
 		}
 		console.log(message);
-		
+
 		if (typeof message.scrollTop !== "undefined") {
 			doc.scrollTop(doc.scrollTop() + message.scrollTop);
 		}
