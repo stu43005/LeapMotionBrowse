@@ -43,13 +43,15 @@
 
 					this.swipe = {
 						fingerId: finger.id,
-						lastPosition: finger.stabilizedTipPosition
+						lastPosition: finger.stabilizedTipPosition,
+						count: 1
 					};
 				} else {
 					// 之後進行動作
 					finger = frame.finger(this.swipe.fingerId);
+					this.swipe.count += 1;
 
-					if (finger.stabilizedTipPosition && this.swipe.lastPosition) {
+					if (finger.stabilizedTipPosition && this.swipe.lastPosition && this.swipe.count > 5) {
 						Leap.vec3.sub(move, finger.stabilizedTipPosition, this.swipe.lastPosition);
 						App.vec3MulAll(move, move, this.options.swipeGestureSpeed);
 						if (!this.options.touchScroll) {
