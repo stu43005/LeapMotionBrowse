@@ -38,9 +38,10 @@
 			// 手掌的角度 < 45度
 			if (handAngle > 0.5) {
 				if (!this.swipe || !frame.finger(this.swipe.fingerId)) {
-					// 第一次進行 or 找不到相同的手指
+					// 第一次動作 or 找不到與上次相同的手指
 					finger = frame.fingers[0];
 
+					// 儲存手指ID與位置
 					this.swipe = {
 						fingerId: finger.id,
 						lastPosition: finger.stabilizedTipPosition,
@@ -52,17 +53,20 @@
 					this.swipe.count += 1;
 
 					if (finger.stabilizedTipPosition && this.swipe.lastPosition && this.swipe.count > 5) {
+						// 計算畫面移動距離
 						Leap.vec3.sub(move, finger.stabilizedTipPosition, this.swipe.lastPosition);
 						App.vec3MulAll(move, move, this.options.swipeGestureSpeed);
 						if (!this.options.touchScroll) {
 							App.vec3MulAll(move, move, -1);
 						}
 
+						// 傳送資料給分頁
 						this.sendMessageToCurrentTab({
 							scrollTop: move[1],
 							scrollLeft: move[0] * -1
 						});
 
+						// 儲存手指位置
 						this.swipe.lastPosition = finger.stabilizedTipPosition;
 					}
 				}
