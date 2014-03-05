@@ -35,8 +35,8 @@
 				move = Leap.vec3.create(),
 				finger;
 
-			// 手掌的角度 < 90度
-			if (handAngle > 0) {
+			// 手掌的角度 < 45度
+			if (handAngle > 0.5) {
 				if (!this.swipe || !frame.finger(this.swipe.fingerId)) {
 					// 第一次進行 or 找不到相同的手指
 					finger = frame.fingers[0];
