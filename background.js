@@ -30,31 +30,41 @@
 		//console.log("Frame event for frame " + frame.id);
 
         // 雙指捲動
-        if (frame.fingers.length === 2) {
-            if (!this.swipe || !frame.finger(this.swipe.fingerId)) {
-                // 第一次進行 or 找不到相同的手指
-                this.swipe = {
-                    fingerId: frame.fingers[0].id,
-                    lastPosition: frame.fingers[0].tipPosition
-                };
-            } else {
-                // 之後進行動作
-                var finger = frame.finger(this.swipe.fingerId),
-                    move = Leap.vec3.create();
+        if (frame.hands.length === 1 && frame.fingers.length === 2) {
+			var handAngle = Leap.vec3.dot(frame.hands[0].palmNormal, Leap.vec3.fromValues(0, -1, 0)),
+				move = Leap.vec3.create(),
+				finger;
 
-                Leap.vec3.sub(move, finger.tipPosition, this.swipe.lastPosition);
-                App.vec3MulAll(move, move, this.options.swipeGestureSpeed);
-                if (!this.options.touchScroll) {
-                    App.vec3MulAll(move, move, -1);
-                }
+			// 手掌的角度 < 90度
+			if (handAngle > 0) {
+				if (!this.swipe || !frame.finger(this.swipe.fingerId)) {
+					// 第一次進行 or 找不到相同的手指
+					finger = frame.fingers[0];
 
-                this.sendMessageToCurrentTab({
-                    scrollTop: move[1],
-                    scrollLeft: move[0] * -1
-                });
+					this.swipe = {
+						fingerId: finger.id,
+						lastPosition: finger.stabilizedTipPosition
+					};
+				} else {
+					// 之後進行動作
+					finger = frame.finger(this.swipe.fingerId);
 
-                this.swipe.lastPosition = finger.tipPosition;
-            }
+					if (finger.stabilizedTipPosition && this.swipe.lastPosition) {
+						Leap.vec3.sub(move, finger.stabilizedTipPosition, this.swipe.lastPosition);
+						App.vec3MulAll(move, move, this.options.swipeGestureSpeed);
+						if (!this.options.touchScroll) {
+							App.vec3MulAll(move, move, -1);
+						}
+
+						this.sendMessageToCurrentTab({
+							scrollTop: move[1],
+							scrollLeft: move[0] * -1
+						});
+
+						this.swipe.lastPosition = finger.stabilizedTipPosition;
+					}
+				}
+			}
         } else {
             delete this.swipe;
         }
